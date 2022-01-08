@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.EJB3NamingStrategy
+    show-sql: true
+  security:
+    user:
+      name: account-service
+      password: passw0rd
+server:
+  servlet:
+    context-path: /account-service
