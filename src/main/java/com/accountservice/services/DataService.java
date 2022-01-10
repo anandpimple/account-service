@@ -16,8 +16,18 @@ import com.accountservice.models.PageResponse;
 public interface DataService<RES extends Serializable, REQ extends Serializable, ENT extends BaseEntity> {
     default PageResponse<RES> findAll(final int size, final int pageNo) {
         getLogger().info("Retrieving {} for page no {} with max size {}", getName(), pageNo, size);
-        final Page<ENT> page = getRepository().findAll(Pageable.ofSize(size).withPage(pageNo));
-        return (PageResponse<RES>) PageResponse.builder().withContent(page.getContent().stream().map(this::mapResponseFromEntity).collect(Collectors.toList())).withPage(page.getNumber()).withTotalPages(page.getTotalPages()).withTotalSize(page.getTotalElements()).withSize(page.getContent().size()).build();
+        return mapToPageResponse(getRepository().findAll(Pageable.ofSize(size).withPage(pageNo)));
+    }
+
+    default PageResponse<RES> mapToPageResponse(final Page<ENT> page) {
+        return (PageResponse<RES>) PageResponse
+            .builder()
+            .withContent(page.getContent().stream().map(this::mapResponseFromEntity).collect(Collectors.toList()))
+            .withPage(page.getNumber())
+            .withTotalPages(page.getTotalPages())
+            .withTotalSize(page.getTotalElements())
+            .withSize(page.getContent().size())
+            .build();
     }
 
     default RES create(final REQ request) {

@@ -2,6 +2,9 @@ package com.accountservice.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
@@ -65,7 +68,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void givenNoCustomersPresent_whenGetAllCustomers_theEmptyListReturned() {
+    void givenNoCustomersPresent_whenFindAll_theEmptyListReturned() {
         when(customerRepository.findAll(Pageable.ofSize(1).withPage(0))).thenReturn(Page.empty());
 
         final PageResponse<CustomerResponse> result = underTest.findAll(1, 0);
@@ -75,10 +78,11 @@ class CustomerServiceImplTest {
         assertThat(result.getSize()).isZero();
         assertThat(result.getTotalPages()).isOne();
         assertThat(result.getTotalSize()).isZero();
+        verify(customerRepository).findAll(Pageable.ofSize(1).withPage(0));
     }
 
     @Test
-    void givenCustomersPresent_whenGetAllCustomers_thenCustomerReturned() {
+    void givenCustomersPresent_whenFindAll_thenCustomerReturned() {
         when(customerRepository.findAll(Pageable.ofSize(2).withPage(1))).thenReturn(page);
         final Customer customer1 = customer("TestName1", "TestLastName1", "TestBid1");
         final Customer customer2 = customer("TestName2", "TestLastName2", "TestBid2");
@@ -97,16 +101,18 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void givenCustomerNotPresentForBid_whenFindCustomerByBid_thenDataNotFoundException() {
+    void givenCustomerNotPresentForBid_whenFindByBid_thenDataNotFoundException() {
         when(customerRepository.getCustomerByBusinessId("bid")).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(DataNotFoundException.class)
             .isThrownBy(() -> underTest.findByBid("bid"))
             .withMessage("Customer not found with bid 'bid'");
+
+        verify(customerRepository).getCustomerByBusinessId("bid");
     }
 
     @Test
-    void givenCustomerPresentForBid_whenFindCustomerByBid_thenCustomerResponseReturned() {
+    void givenCustomerPresentForBid_whenFindByBid_thenCustomerResponseReturned() {
         when(customerRepository.getCustomerByBusinessId(bidArgumentCaptor.capture())).thenReturn(Optional.of(customer("fName", "lName", "bid")));
 
         final CustomerResponse response = underTest.findByBid("bid");
@@ -118,7 +124,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void givenCustomerPresentForBid_whenGetCustomerByBid_thenCustomerResponseReturned() {
+    void givenCustomerPresentForBid_whenGetByBusinessId_thenCustomerResponseReturned() {
         when(customerRepository.getCustomerByBusinessId(bidArgumentCaptor.capture())).thenReturn(Optional.of(customer("fName", "lName", "bid")));
 
         final Optional<Customer> response = underTest.getByBusinessId("bid");
@@ -133,7 +139,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void givenCustomerNotPresentForBid_whenGetCustomerByBid_thenEmptyResponseReturned() {
+    void givenCustomerNotPresentForBid_whenGetByBusinessId_thenEmptyResponseReturned() {
         when(customerRepository.getCustomerByBusinessId(bidArgumentCaptor.capture())).thenReturn(Optional.empty());
 
         final Optional<Customer> response = underTest.getByBusinessId("bid");
@@ -143,7 +149,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void whenCreateCustomer_thenCustomerAdded() {
+    void whenCreate_thenCustomerAdded() {
         when(customerRepository.save(customerArgumentCaptor.capture())).thenReturn(customer("fName", "lName", "bid"));
 
         final CustomerResponse response = underTest.create(CustomerRequest.builder().withFirstName("fName").withLastName("lName").build());
@@ -157,16 +163,18 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void givenCustomerNotPresentForBid_whenDeleteCustomerByBid_thenDataNotFoundException() {
+    void givenCustomerNotPresentForBid_whenDelete_thenDataNotFoundException() {
         when(customerRepository.getCustomerByBusinessId("bid")).thenReturn(Optional.empty());
 
         assertThatExceptionOfType(DataNotFoundException.class)
             .isThrownBy(() -> underTest.delete("bid"))
             .withMessage("Customer not found with bid 'bid'");
+
+        verify(customerRepository, never()).delete(any(Customer.class));
     }
 
     @Test
-    void givenCustomerPresentForBid_whenDeleteCustomerByBid_thenCustomerDeleted() {
+    void givenCustomerPresentForBid_whenDelete_thenCustomerDeleted() {
         when(customerRepository.getCustomerByBusinessId(bidArgumentCaptor.capture())).thenReturn(Optional.of(customer("fName", "lName", "bid")));
 
         underTest.delete("bid");

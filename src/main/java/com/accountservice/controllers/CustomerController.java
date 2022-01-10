@@ -1,5 +1,7 @@
 package com.accountservice.controllers;
 
+import static com.accountservice.Constants.CUSTOMER_BID_REGEX;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -27,7 +29,7 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @Validated
-@Api(value = "customer", tags = {"customer"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, authorizations = {})
+@Api(value = "customers", tags = {"customers"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, authorizations = {})
 public class CustomerController {
     private final CustomerService customerService;
 
@@ -50,13 +52,13 @@ public class CustomerController {
 
     @GetMapping(value = "/customers/{bId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "GetCustomerByBusinessId", notes = "To get customer by its business id")
-    public CustomerResponse getCustomerByBid(@Valid @PathVariable("bId") @Pattern(regexp = "(CU)[0-9]{12}") final String bId) {
+    public CustomerResponse getCustomerByBid(@Valid @PathVariable("bId") @Pattern(regexp = CUSTOMER_BID_REGEX) final String bId) {
         return customerService.findByBid(bId);
     }
 
     @DeleteMapping(value = "/customers/{bId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "DeleteCustomer", notes = "To soft delete customer")
-    public void deleteCustomerByBid(@Valid @PathVariable("bId") @Pattern(regexp = "(CU)[0-9]{12}") final String bId) {
+    public void deleteCustomerByBid(@Valid @PathVariable("bId") @Pattern(regexp = CUSTOMER_BID_REGEX) final String bId) {
         customerService.delete(bId);
     }
 }
