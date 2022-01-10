@@ -15,21 +15,20 @@ import lombok.Value;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @ApiModel("Customer details")
 public class CustomerResponse implements Serializable {
-    private static final long serialVersionUID = 5871007476532166418L;
 
-    @ApiModelProperty(required = true, value = "First name of the customer", example = "Xyz")
+    @ApiModelProperty(required = true, value = "First name of the customer", example = "FirstName")
     String firstName;
 
-    @ApiModelProperty(required = true, value = "Last name of the customer", example = "Xyz")
+    @ApiModelProperty(required = true, value = "Last name of the customer", example = "LastName")
     String lastName;
 
     @ApiModelProperty(required = true, value = "Customer id", example = "CU12345678912")
     String customerId;
 
-    @ApiModelProperty(required = true, value = "Customer creation date", example = "CU12345678912")
+    @ApiModelProperty(required = true, value = "Customer creation date")
     LocalDateTime createdOn;
 
-    @ApiModelProperty(required = true, value = "Customer modification date", example = "CU12345678912")
+    @ApiModelProperty(value = "Customer modification date")
     LocalDateTime modifiedOn;
 
 }

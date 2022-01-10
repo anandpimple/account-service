@@ -23,19 +23,19 @@ import lombok.Data;
 public abstract class BaseEntity implements Serializable {
     @Id
     @GeneratedValue
-    private Long id;
+    Long id;
 
     @Column(nullable = false, unique = true, name = "business_id")
-    private String businessId;
+    String businessId;
 
     @Column(nullable = false, name = "created_on")
-    private Timestamp createdOn;
+    Timestamp createdOn;
 
     @Column(name = "modified_on")
-    private Timestamp modifiedOn;
+    Timestamp modifiedOn;
 
     @Column(name = "deleted_on")
-    private Timestamp deletedOn;
+    Timestamp deletedOn;
 
     @PrePersist
     void setDefaultValues() {
